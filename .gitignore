@@ -61,6 +61,7 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
+*.blend
 *.blend[0-9]*
 *.kra~
 *.png~
