@@ -4,26 +4,41 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+ 
+    private bool isMoving;
+    private Vector3 originalPosition, targetPosition;
 
-    float movementSpeed = 5f;
-    float inputHorizontal;
-    float inputVertical;
+    //time it takes for player to move from originalPosition to targetPosition. In seconds (so 1/5th of a second)
+    private float timeToMove = 0.2f;
     
-    // Start is called before the first frame update
     void Start() {
         
     }
 
-    // Update is called once per frame
     void Update() {
-        inputHorizontal = Input.GetAxisRaw("Horizontal");
-        inputVertical = Input.GetAxisRaw("Vertical");
+ 
+        if (Input.GetKey(KeyCode.W) && !isMoving) StartCoroutine(MovePlayer(Vector3.forward));
+        if (Input.GetKey(KeyCode.A) && !isMoving) StartCoroutine(MovePlayer(Vector3.left));
+        if (Input.GetKey(KeyCode.S) && !isMoving) StartCoroutine(MovePlayer(Vector3.back));
+        if (Input.GetKey(KeyCode.D) && !isMoving) StartCoroutine(MovePlayer(Vector3.right));
+    }
 
-        //update the position
-        transform.position = transform.position + new Vector3(inputHorizontal * movementSpeed * Time.deltaTime,
-            0, inputVertical * movementSpeed * Time.deltaTime);
+    private IEnumerator MovePlayer(Vector3 direction) {
+        isMoving = true;
 
-        //output to log the position change
-        Debug.Log(transform.position);
+        float elapsedTime = 0;
+
+        originalPosition = transform.position;
+        targetPosition = originalPosition + direction;
+
+        while(elapsedTime < timeToMove) {
+            transform.position = Vector3.Lerp(originalPosition, targetPosition, (elapsedTime/timeToMove));
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPosition;
+
+        isMoving = false;
     }
 }
