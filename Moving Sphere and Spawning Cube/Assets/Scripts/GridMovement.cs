@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class GridMovement : MonoBehaviour
 {
- 
+    [SerializeField] private float forwardBoundary = 3f;
+    [SerializeField] private float leftBoundary = -5f;
+    [SerializeField] private float backBoundary = -5f;
+    [SerializeField] private float rightBoundary = 3f;
+
     private bool isMoving;
 
     //time it takes for player to move from originalPosition to targetPosition. In seconds (so 1/5th of a second)
@@ -16,6 +20,7 @@ public class GridMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) StartMove(Vector3.left);
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) StartMove(Vector3.back);
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) StartMove(Vector3.right);
+        PlayerBoundaries();
     }
 
     private bool StartMove(Vector3 direction) {
@@ -41,5 +46,22 @@ public class GridMovement : MonoBehaviour
         transform.position = targetPosition;
 
         isMoving = false;
+    }
+
+    void PlayerBoundaries() {
+        if(transform.position.x > rightBoundary) {
+            transform.position = new Vector3(rightBoundary, 0, transform.position.z);
+            return;
+        } else if(transform.position.x < leftBoundary) {
+            transform.position = new Vector3(leftBoundary, 0, transform.position.z);
+            return;
+        }
+        if(transform.position.z > forwardBoundary) {
+            transform.position = new Vector3(transform.position.x, 0, forwardBoundary);
+            return;
+        } else if(transform.position.z < backBoundary) {
+            transform.position = new Vector3(transform.position.x, 0, backBoundary);
+            return;
+        }
     }
 }
