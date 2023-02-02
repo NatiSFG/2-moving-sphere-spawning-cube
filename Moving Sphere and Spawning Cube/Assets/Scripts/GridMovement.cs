@@ -20,7 +20,6 @@ public class GridMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) StartMove(Vector3.left);
         if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) StartMove(Vector3.back);
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) StartMove(Vector3.right);
-        PlayerBoundaries();
     }
 
     private bool StartMove(Vector3 direction) {
@@ -37,31 +36,44 @@ public class GridMovement : MonoBehaviour
         Vector3 originalPosition = transform.position;
         Vector3 targetPosition = originalPosition + direction;
 
-        while(elapsedTime < timeToMove) {
-            transform.position = Vector3.Lerp(originalPosition, targetPosition, (elapsedTime/timeToMove));
-            elapsedTime += Time.deltaTime;
-            yield return null;
+        if (ValidateGridPosition(targetPosition) == targetPosition) {
+            while (elapsedTime < timeToMove) {
+                transform.position = Vector3.Lerp(originalPosition, targetPosition, (elapsedTime / timeToMove));
+                elapsedTime += Time.deltaTime;
+                yield return null;
+            }
         }
 
-        transform.position = targetPosition;
+        transform.position = ValidateGridPosition(targetPosition);
 
         isMoving = false;
     }
 
-    void PlayerBoundaries() {
-        if(transform.position.x > rightBoundary) {
-            transform.position = new Vector3(rightBoundary, 0, transform.position.z);
-            return;
-        } else if(transform.position.x < leftBoundary) {
-            transform.position = new Vector3(leftBoundary, 0, transform.position.z);
-            return;
+    private Vector3 ValidateGridPosition(Vector3 position) {
+        if (position.x > rightBoundary) {
+            position.x = rightBoundary;
+        } else if (position.x < leftBoundary) {
+            position.x = leftBoundary;
+        } else if (position.z > forwardBoundary) {
+            position.z = forwardBoundary;
+        } else if (position.z < backBoundary) {
+            position.z = backBoundary;
         }
-        if(transform.position.z > forwardBoundary) {
-            transform.position = new Vector3(transform.position.x, 0, forwardBoundary);
-            return;
-        } else if(transform.position.z < backBoundary) {
-            transform.position = new Vector3(transform.position.x, 0, backBoundary);
-            return;
-        }
+        return position;
     }
+
+    //private bool WithinBoardBoundaries() {
+    //    Vector3 spherePosition = transform.position;
+
+    //    if(spherePosition.x > rightBoundary) {
+    //        spherePosition = new Vector3(rightBoundary, spherePosition.y, spherePosition.z);
+    //    } else if(spherePosition.x < leftBoundary) {
+    //        spherePosition = new Vector3(leftBoundary, spherePosition.y, spherePosition.z);
+    //    } else if (spherePosition.z > forwardBoundary) {
+    //        spherePosition = new Vector3(spherePosition.x, spherePosition.y, forwardBoundary);
+    //    } else if (spherePosition.z < backBoundary) {
+    //        spherePosition = new Vector3(spherePosition.x, spherePosition.y, backBoundary);
+    //    } else return true;
+    //    transform.position = spherePosition;
+    //}
 }
